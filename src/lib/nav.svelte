@@ -1,0 +1,63 @@
+<script>
+  import Login from "../login.svelte";
+
+  const log = localStorage.getItem("login")
+  function logOut(){
+    localStorage.clear()
+  }
+  console.log(log===null)
+</script>
+<header class="px-10">
+  
+  <div class="logo">
+    <a href="." >
+      <h1 class="size-24">Sparsh</h1>
+
+    </a>
+  </div>
+  <nav class=".nav">
+    <a href="#/talk">Talk</a>
+    {#if log===null}
+    <a href="#/login">Log In</a>
+    {:else}
+    <button on:click={logOut}>Logout</button>
+    {/if}
+   
+  </nav>
+</header>
+<style is:global>
+  @import url("https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap");
+  header {
+    box-shadow: 0px 0px 20px var(--secondry-color);
+    width: 100vw;
+    height: 90px;
+    background-color: var(--background);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed; 
+    z-index: 5;
+  }
+  nav{
+    display: flex;
+    gap:clamp(2px,2vw,20px);
+    font-size:clamp(0px,3vw,16px);
+    color:var(--darker-primary);
+    font-family: "Alex Brush";
+    
+
+  }
+  .logo {
+    font-size: clamp(0px,6vw,28px);
+    font-family: "Alex Brush", serif;
+    font-weight: 400;
+    font-style: normal;
+    color:var(--darker-primary);
+  }
+  @media only screen and (min-width:631px){
+    .nav{
+        display:none !important;
+    }
+  }
+</style>
