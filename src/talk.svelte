@@ -4,12 +4,15 @@
   import { GoogleGenerativeAI } from "@google/generative-ai";
   import {
     getFirestore,
+    // @ts-ignore
     doc,
+    // @ts-ignore
     getDoc,
     where,
     query,
     collection,
     getDocs,
+    // @ts-ignore
     QuerySnapshot,
   } from "firebase/firestore";
   import { onMount } from "svelte";
@@ -30,6 +33,7 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  // @ts-ignore
   const login = JSON.parse(localStorage.getItem("login"));
   const uid = login.id;
   let querySnap = query(
@@ -50,11 +54,14 @@
     );
   }
   const docs = await getDocs(querySnap);
+  // @ts-ignore
   let docIds = [];
   let mainRes = {};
   docs.forEach(
+    // @ts-ignore
     (doc) => (docIds = [...docIds, { id: doc.id, name: doc.data().name }])
   );
+  // @ts-ignore
   docIds.forEach(async (docId) => {
     let col = `${uid}&${docId.id}`;
     if (login.isTchrs == 1) {
@@ -62,8 +69,10 @@
     }
     const docsRef = collection(db, col);
     const docsSnap = await getDocs(docsRef);
+    // @ts-ignore
     let restructureTemp = [];
     docsSnap.forEach(
+      // @ts-ignore
       (doc) => (restructureTemp = [...restructureTemp, doc.data()])
     );
     // @ts-ignore
@@ -73,6 +82,7 @@
   const genAI = new GoogleGenerativeAI(
     "AIzaSyBgCxBkpjrB3AreQdkg38eEhj_TqsYQvlk"
   );
+  // @ts-ignore
   async function askGemini(prompt) {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
@@ -83,37 +93,61 @@
     return responseText;
   }
 
+  // @ts-ignore
+  /**
+   * @type {any[] | null | undefined}
+   */
   let msgHistory = [];
+  // @ts-ignore
+  /**
+   * @type {any}
+   */
   let msg;
   async function sendMsg() {
-    msgHistory = [...msgHistory, { msg: msg, sender: "user" }];
+    // @ts-ignore
+    msgHistory.push({ msg: msg, sender: "user" })
+    msgHistory = msgHistory
+    console.log(msgHistory)
+    // @ts-ignore
     let reply = await askGemini(msg);
+    msg=""
     msgHistory = [...msgHistory, { msg: reply, sender: "model" }];
+    msgHistory = msgHistory
+
   }
   onMount(() => {
     console.log("Init Ai")
-    askGemini(
-      "CONTEXT:You are a emotional-support/helper bot of a student or a teacher in an App called sparsh, teachers and students here can add notes to each other, some notes are priavte while some are public, during your resut generation you can use either of these notes but while you can refrence public notes, never reference private notes directly Here are the note details for user from each of their student/teacher, these notes are context helping you to generate, you are here to ask actual questions. here are the notes: in json formt" +
-        JSON.stringify(mainRes)
-    );
+    // askGemini(
+    //   "CONTEXT:You are a emotional-support/helper bot of a student or a teacher in an App called sparsh, teachers and students here can add notes to each other, some notes are priavte while some are public, during your resut generation you can use either of these notes but while you can refrence public notes, never reference private notes directly Here are the note details for user from each of their student/teacher, these notes are context helping you to generate, you are here to ask actual questions. here are the notes: in json formt" +
+    //     JSON.stringify(mainRes)
+    // );
   });
+  // @ts-ignore
   console.log(msgHistory)
+
+
 </script>
 
 <Nav />
 <section class="pt-[200px]">
+  {#each msgHistory as item}
+  Hi
+  {#if item.sender == "user"}
   <div class="w-screen flex justify-end">
     <div class="msg bg-purple-100 max-w-2/5 rounded-xl p-3">
       <pre>By You</pre>
-      Hello
+      {item.msg}
     </div>
   </div>
+  {:else}
   <div class="w-screen flex justify-start">
     <div class="msg bg-purple-100 max-w-2/5 rounded-xl p-3">
       <pre>By Model</pre>
-      Hello
+      {item.msg}
     </div>
   </div>
+  {/if}
+  {/each}
 </section>
 <div
   class="bottom flex absolute bottom-0 w-screen h-20 p-5 items-center justify-around bg-purple-100"

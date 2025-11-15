@@ -92,6 +92,7 @@
       Hi {JSON.parse(login).name}
     {/if}
   </h1>
+  <div class="container">
   {#each docList as doc}
     <a href="#/page/{doc.uid}">
       <div
@@ -101,5 +102,16 @@
         <h1 class="text-2xl">{doc.name}</h1>
       </div>
     </a>
+    
   {/each}
+  </div>
 </section>
+<style>
+  .container {
+  display: grid;
+  gap: 12px;
+
+  /* Automatically fit items, min size 150px */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+</style>
